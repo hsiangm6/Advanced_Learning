@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+        <!-- 若將js寫在<head>裡，因為瀏覽器還未解析<body>內容，所以需要加上DomContentLoaded事件來等待:https://book.vue.tw/CH1/1-1-introduction.html -->
+    </head>
+    <body>
+        <!--一、綁定數據-->
+        <div id="firstVue">
+            {{content}}
+        </div>
+
+        <!--二、綁定屬性-->
+        <!-- <div id="timeDiv" v-bind:title="nowTime"> v-bind有縮寫，所以v-bind:title可以簡寫為:title
+            //首先在HTML中使用v-bind去設定該DOM的屬性，這裡是title，
+            //    做用為滑鼠停留會顯示的提示文字，並將該屬性的值綁定給data中nowTime的值；這個值會動態回傳目前的時間new Date()
+            {{content}}
+        </div> -->
+        <!--三、綁定事件-->
+        <div id="timeDiv" v-on:click="getTime">
+            <!--//透過click事件顯示時間。v-on有縮寫，所以v-on:click可以簡寫為@click-->
+            {{content}}
+        </div>
+
+
+        <!--條件判斷-->
+        <!-- 文字切換 -->
+        <!-- <div id="vueDiv" >
+            <span v-if="status == 'A'">我是小明</span>
+            <span v-else-if="status == 'B'">我是小華</span>
+            <span v-else>我是神Q</span>
+        </div> -->
+        <!-- input切換 -->
+        <!-- v-if的切換是會把DOM給移除再新增的 -->
+        <div id="vueDiv">
+            <input v-if="status" placeholder="輸入姓名" key="userName">
+            <!--如果是想要完全獨立兩個input，就是使用key去為每個input做一個識別，這樣就會重新繪製-->
+            <input v-else="status" placeholder="輸入mail" key="userEmail">
+            <input type="button" value="切換輸入" @click="changeStatus">
+        </div>
+
+
+        <!-- 迴圈 -->
+        <!-- 文字輸出 -->
+        <div id="todoList">
+            <div v-for="list in lists">
+                {{list.item}}
+            </div>
+        </div>
+
+        <!-- 反轉陣列 -->
+        <div id="formList">
+            <div v-for="list in lists">
+                {{titleText}}{{list.item}}：
+                <!--用第一天學到的v-bind綁定placeholder屬性為list.item的值-->
+                <input :placeholder="list.item" :key="list.id">
+                <!--一旦用 Placeholder 指定了任何的字串，那麼這個文字輸入欄位就會自動顯示這個字串在欄位裡面-->
+                <!-- 加上key值的他們，如果重新綁定就會進行重新繪製了 -->
+            </div>
+            <!--昨天是切換輸入，今天是反轉陣列-->
+            <input type="button" value="反轉陣列" @click="changeSort">
+        </div>
+
+
+        <!-- 雙向綁定資料:對input、textarea、select、checkbox和checkbox這堆全部讓使用者輸入的表單做雙向的綁定 -->
+        <!-- input -->
+        <div id="name">
+            <!--為input設定一個v-model屬性，並將綁定的資料設定為text-->
+            <input v-model="text1">
+            <div>您的姓名是：{{text1}}</div>
+        </div>
+
+        <!-- textarea:和input一樣，不同的是文字可以在textarea內折行 -->
+        <div id="introduce">
+            <p>自我介紹</p>
+            <textarea v-model="text2"></textarea>
+            <div>您的自我介紹內容：</div>
+            <pre>{{text2}}</pre> <!--<pre>會保留textarea內輸入的換行-->
+        </div>
+
+        <!-- select, checkbox, radio-->
+        <div id="gender">
+            <p>選擇性別</p>
+            <!-- select -->
+            <select v-model="selectName"><!--select tag裡加入multiple就會變成多選-->
+                <!-- 只要select的選項改變，list內的item就會把目前綁定的value值(下方程式碼中的:value="list.item")寫給selectName -->
+                <option v-for="list in lists" :value="list.item">{{list.item}}</option>
+                <!-- <option v-for="list in lists" :value="list">{{list.item}} //如果我要同時取得option的value和text，:value="list -->
+            </select>
+            <div>選擇的性別是:{{selectName}}</div>
+            <!-- <div>選擇的性別是:{{selectName.item}}</div> //如果我要同時取得option的value和text -->
+            <!-- <div>性別的值是:{{selectName.val}}</div> //如果我要同時取得option的value和text -->
+            <!-- checkbox (多選框)-->
+            <div>
+                <span v-for="list in lists">
+                    <input type="checkbox" :value="list.item"
+                        v-model="checkedNames"/>
+                    <label>{{list.item}}</label>
+                </span>
+            </div>
+            <div>選擇的性別是:{{checkedNames}}</div>
+            <!-- radio(單選框) -->
+            <div>
+                <span v-for="list in lists">
+                    <input type="radio" :value="list.item"
+                        v-model="radioNames"/>
+                    <label>{{list.item}}</label>
+                </span>
+            </div>
+            <div>選擇的性別是:{{radioNames}}</div>
+        </div>
+
+        <!-- 非即時綁定:像一般的onchange一樣，只有在該input失去焦點的時候才會重新綁定資料 -->
+        <div id="name_lazy">
+            <input v-model.lazy="text">
+            <div>您的姓名是：{{text}}</div>
+        </div>
+
+        <!-- 只容許數字進行綁定 -->
+        <div id="age">
+            <input v-model.number="text" type="number">
+            <div>您的年齡是：{{text}}</div>
+        </div>
+
+        <!-- 綁定資料的時候自動清除前後的空白 -->
+        <div id="name_trim">
+            <input v-model.trim="text">
+            <div>您的姓名是：{{text}}</div>
+        </div>
+
+
+        <!-- 計算屬性(computed):需要先處理再綁定的資料，可以直接把處理資料的邏輯寫在計算屬性中 -->
+        <div id="baseVue">
+            <!--這裡改成繫結computed內的屬性名稱-->
+            {{reText}}
+        </div>
+
+        <!-- 在一個表單上的值發生改變的時候，去執行某些事件:例如判斷輸入資料的格式正不正確 -->
+        <div id="nameVue">
+            <input id="name_correct" v-model="name_correct" @change="checkName"
+                />
+            <span style="color:red">{{alertMessage}}</sapn>
+        </div>
+
+
+
+
+
+
+        <!-- Vue 2.X-->
+        <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+        <!--開發版本:會有完整的警告訊息在console中顯示-->
+        <!-- <script src="https://cdn.jsdelivr.net/npm/vue"></script> //生產版本:據官方說針對文件的大小及速度都有做了優化 -->
+        <!-- Vue 3.0 -->
+        <!-- <script src="https://unpkg.com/vue@next"></script> //開發版本:會有完整的警告訊息在console中顯示 -->
+        <script src="learning.js"></script>
+    </body>
+</html>

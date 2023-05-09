@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <meta charset="UTF-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>Document</title>
+
+        <link rel="stylesheet" href="vue3.css">
+
+        <!-- bootstrap -->
+        <link
+            href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css"
+            rel="stylesheet"
+            integrity="sha384-KK94CHFLLe+nY2dmCWGMq91rCGa5gtU4mk92HdvYe+M/SXH301p5ILy+dN9+nJOZ"
+            crossorigin="anonymous">
+        <script
+            src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"
+            integrity="sha384-ENjdO4Dr2bkBIFxQpeoTz1HIcje39Wm4jDKdf19U8gI4ddQ3GYNS7NTKfAdVQSZe"
+            crossorigin="anonymous"></script>
+
+    </head>
+    <body>
+        <!-- //Hello Vue! -->
+        <div id="app">
+            {{ message }},
+            單價: {{price}},
+            數量: {{quantity}},
+            總金額: {{price*quantity}} 元, <!--可做簡單運算-->
+            <p>總金額(methods): {{subtotalMethods()}} 元</p>
+            <p>總金額(computed): {{subtotalComputed}} 元</p>
+        </div>
+
+        <!-- 小心data共用帶來的汙染 -->
+        <div id="app1">
+            <input type="text" v-model="name">
+        </div>
+        <div id="app2">
+            <input type="text" v-model="name">
+        </div>
+
+        <!-- 幣值轉換 -->
+        <div id="curr_methods">
+            <p>1日幣 = 0.278台幣</p>
+            <!-- v-model:讓input的輸入框與Vue時體內的屬性綁定 -->
+            <!-- methods方式: -->
+            <div>台幣<input type="text" v-model="twd" @input="twd2jpt"></div>
+            <!--v-on: == @ ->監聽事件 =-->
+            <!-- v-on:[事件名稱]="運算式" -->
+            <div>日幣<input type="text" v-model="jpy" @input="jpy2twd"></div>
+        </div>
+        <div id="curr_computed">
+            <p>1日幣 = 0.278台幣</p>
+            <!-- computed方式: -->
+            <div>台幣<input type="text" v-model="twd" @input="twd"></div>
+            <!--v-on: == @ ->監聽事件 =-->
+            <div>日幣<input type="text" v-model="jpy" @input="jpy"></div>
+            <div>美元<input type="text" v-model="used" @input="used"></div>
+        </div>
+
+        <!-- v-bind -->
+        <div id="attr">
+            <p v-bind:id="customId"></p> <!--實際渲染時id就變成item-id-1-->
+            <!-- v-bind:id可簡寫為:id -->
+        </div>
+
+        <!-- v-model -->
+        <div id="binding">
+            <input type="text" v-model="message" placeholder="edit me">
+            <!-- input內的文字被更改時，會同步更新到data的message裡 -->
+            <!-- textarea的使用方式與input一樣，若在<textarea>裡使用{{}}而
+                不是v-model，只會控制內容的顯示，更新時不會寫入data-->
+            <p>Message is :{{message}}</p>
+
+            <!-- 單選框 -->
+            <!-- input對應的v-model都是picked -->
+            <input type="radio" id="one" value="1" v-model="picked">
+            <!-- 因為data裡的picked預設為1，所以執行時<input type="radio" 
+                id="one" value="1" v-model="picked">會預設被選中 -->
+            <label for="one">One</label>
+            <input type="radio" id="two" value="2" v-model="picked">
+            <label for="two">Two</label>
+            <!-- <br> -->
+            <span> Picked:{{picked}}</span>
+            <br>
+            <!-- 多選框 -->
+            <!-- input對應的v-model都是checkedNames -->
+            <input type="checkbox" id="jack" value="Jack"
+                v-model="checkedNames">
+            <label for="jack">Jack</label>
+            <input type="checkbox" id="john" value="John"
+                v-model="checkedNames">
+            <label for="john">John</label>
+            <input type="checkbox" id="mike" value="Mike"
+                v-model="checkedNames">
+            <label for="mike">Mike</label>
+            <input type="checkbox" id="mary" value="Mary"
+                v-model="checkedNames">
+            <label for="mary">Mary</label>
+            <p>&nbsp; Checked names: {{checkedNames}}</p>
+            <br>
+            <!-- 下拉式選單 -->
+            <select name="" id="" v-model="selected">
+                <option disabled value="">請選擇</option>
+                <option>台北市</option>
+                <option>新北市</option>
+                <option>基隆市</option>
+            </select>
+            <p>Selected: {{selected || '未選擇'}}</p>
+            <br>
+            <!-- v-model.lazy:離開input焦點時才更新 -->
+            <!-- v-model.number:在更新時，會在背後將對應的資料轉型為數字的格式，
+                如果輸入的是字串，也會直接以字串的型態呈現 -->
+            <!-- v-model.trim:針對某個input框自動過濾前後的空白字元 -->
+        </div>
+
+        <!-- 模板綁定 -->
+        <div id="model-binding">
+            <!-- v-text:無視標籤內的原本內容，只顯示出vue實體的text內容 -->
+            <div v-text="text"></div>
+            <!-- v-html:無視標籤內的原本內容，只顯示出vue實體的text內容(含html tag) -->
+            <!-- v-once:只會渲染指定節點一次，往後不再更新 -->
+            Edit: <input type="text" v-model="rawContent">
+            <div>
+                v-text:
+                <div class="text" v-text="rawContent"></div>
+            </div>
+
+            <div>
+                v-html:
+                <div class="html" v-html="rawContent"></div>
+            </div>
+
+            <div>
+                v-text with "v-once":
+                <div class="html" v-text="rawContent" v-once></div>
+                <!-- 即使更新input的文字，依然只會顯示最初的字樣 -->
+            </div>
+            <!-- 加上v-pre之後不會顯示解析模板內容 -->
+            <div v-pre>{{text}}</div>
+        </div>
+
+        <div id="css-binding">
+            <p>css-binding:</p>
+            <!-- 當message的內容長度超過10個字，就會自動加上error的class -->
+            <!-- 如果想要一次控制多個class，可用透號分隔 -->
+            <input type="text" v-model.trim="message" :class="{'error':
+                message.length> 10}">
+            <!-- 當isActive, hasError的狀態更新時，對應的class也會按照truthy
+                或falsy狀態來進行更新 -->
+            <div :class="{active: isActive, 'text-danger': hasError}"></div>
+            <!-- 操作style屬性 -->
+            <input type="text" v-model.trim="message" placeholder="請勿超過十個字"
+                :style="msgStyle">
+        </div>
+
+        <!-- 事件處理:https://book.vue.tw/CH1/1-5-events.html -->
+        <div id="event-binding">
+            <p><input v-model.number="amount"></p>
+            <p>Count: {{count}}</p>
+            <button @click="count++">Plus</button>
+            <!-- 可在method取得event物件 -->
+            <button @click="plus(amount, $event)">Plus amount</button>
+            <button @click="alert('Hello')">Alert</button>
+            <!-- @click.stop:也就是event.stopPropagation(): 
+                防止了事件繼續冒泡傳遞到父級元素 -->
+            <!-- @click.prevent:也就是event.preventDefault(): 
+                用來阻止元素的預設行為 -->
+            <!-- @click.stop.prevent也是可以使用的 -->
+            <!-- @click.capture:用來指定事件以捕獲的形式觸發 -->
+            <!-- @click.self:只觸發元素自己的事件行為，由子層元素傳遞來的事件不會觸發-->
+            <!-- @click.once:讓指定的事件只會觸發一次-->
+            <!-- @click.passive:告訴瀏覽器這個事件處理器會不會呼叫event.preventDefault來停止瀏覽器的原生行為-->
+            <!-- @keydown.key:判斷user的按鍵來進行不同的動作(更多的key請瀏覽上面的網址)
+                ex:@keydown.enter:按下'enter'鍵才觸發某個method-->
+            <!-- @keydown.key.exact:精確判斷鍵盤按鍵，
+                ex:@keydown.enter.exact:只有按下enter鍵才會執行，如果按下ctrl+enter是不會執行的 -->
+            <!-- 滑鼠事件專用的修飾子:.left, .right, .middle -->
+        </div>
+
+        <!-- 條件判斷與列表渲染:https://book.vue.tw/CH1/1-6-conditions-and-flow-control.html -->
+        <!-- v-if(值為truthy就顯示，falsy則移除)/v-show(值為truthy就顯示，falsy則隱藏) -->
+        <div v-if="count===0">Block A</div>
+        <div v-else-if="count <5">Block B</div>
+        <div v-else>Block C</div>
+
+        <div id="loop">
+            <ul>
+                <!-- v-for="page in 10"，也接受整數作為渲染條件 -->
+                <li v-for="item in arr">{{item}}</li>
+                <li v-for="(item, index) in arr">{{index}}/{{item}}</li>
+                <li v-for="(item, index, key) in book">{{key}}/{{index}}/{{item}}</li>
+            </ul>
+            <!-- 多個節點同時透過v-for來循環渲染，可透過包覆一層<template> -->
+            <!-- ex: -->
+            <div class="dropdown-menu">
+                <template v-for="i in links">
+                    <div class="dropdown-divider"></div>
+                    <a class="dropdown-item" :href="i.link">i.title</a>
+                </template>
+            </div>
+            <!-- v-for列表的排序與過濾 -->
+            <!-- index and key -->
+            <!-- ex: -->
+            <!-- Todo List -->
+            <h5>Todo</h5>
+            <ul>
+                <li v-for="i in todoLists" :key="i.id">
+                    <!-- v-for的id是隨array生成的，所以當index未變時，他就是一個可重複使用的元素 -->
+                    <label> <input type="checkbox" v-model="i.isDone">{{i.title}}</label>
+                </li>
+            </ul>
+            <!-- Done List -->
+            <h5>Done</h5>
+            <ul>
+                <li v-for="i in doneLists" :key="i.id">
+                    <label> <input type="checkbox" v-model="i.isDone">{{i.title}}</label>
+                </li>
+            </ul>
+            <!-- 狀態的更新與畫面的同步 -->
+            <!-- 根據模板的畫面更新前/後時機來觸發:watch屬性 -->
+
+
+        </div>
+
+        <!-- 元件的生命週期與更新:https://book.vue.tw/CH1/1-7-lifecycle.html -->
+        <div id="renew-and-sync">
+            <h5>state renew and screen sync</h5>
+            <!-- 當user按下enter時會將輸入的文字送進data的messages -->
+            <!-- 要在訊息增加時，訊息列表的卷軸自動捲至最底 -->
+            <div class="messages">
+                <div v-for="m in messages">{{m}}</div>
+            </div>
+            scrollHeight: {{ scrollHeight }} <br>
+            DOM 實際的 scrollHeight: {{ realScrollHeight }}<br>
+            <input type="text" placeholder="輸入任意文字後按下enter鍵" v-model.trim="msg"
+                @keydown.enter="addToMessages">
+        </div>
+
+        <!-- 元件系統的特性:https://book.vue.tw/CH2/2-1-components.html -->
+        <!-- Vue.js 的元件就是個可以被重複使用的實體，
+            透過app.component()將建立的元件註冊在compo這個根實體 -->
+        <div id="compo">
+            <h3>Root Instance</h3>
+
+            <!-- 在根實體使用自訂元件 -->
+            <child-comp></child-comp>
+            <child-comp></child-comp>
+            <my-component></my-component>
+        </div>
+
+        <!-- 透過x-template封裝模板(from web) -->
+        <!-- 當節點大於一個的時候，透過$refs取得實際在網頁上的DOM節點(from web) -->
+        <!-- 子元件的data必須是函數，因為JS是pass by reference進行資料傳遞，
+            若沒用function回傳另一個物件，這些子元件的data會共用同一個狀態(from web) -->
+        <!-- 元件之間的溝通傳遞 -->
+        <div id="quote-props">
+            <h3>{{msg}}</h3>
+            <my-component-props :parent-msg="msg" :props-number="123"></my-component-props>
+            <!-- parent-msg:內層被引用後的名字，因為html不分大小寫，
+                所以像parentMsg要在模板裡寫成parent-msg。"msg"在外層的名字 -->
+            <!-- 有使用v-bind，會將其轉為數字，沒有使用的話，傳入的會是"123"的字串 -->
+        </div>
+
+
+
+
+
+
+
+
+        <script src="https://unpkg.com/vue@next"></script>
+        <script src="vue3.js"></script>
+    </body>
+</html>
