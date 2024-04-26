@@ -1,4 +1,7 @@
-# If you want to run this code, you need to input "streamlit run QA_chatbox.py" in the terminal
+# If you want to run this code
+#       , you need to input "streamlit run QA_chatbox.py" in the terminal
+# If you want to stop the code
+#       , you need to stay in opening the website and press "Ctrl + C" in the terminal
 # load sentimental environment variables
 from dotenv import load_dotenv
 
@@ -28,7 +31,7 @@ st.header("Gemini LLM Application")
 if 'chat_history' not in st.session_state:
     st.session_state['chat_history'] = []
 
-input = st.text_input("Input: ", key="input")
+input = st.text_area("Input: ", key="textarea")
 submit = st.button("Ask the question")
 
 if submit and input:

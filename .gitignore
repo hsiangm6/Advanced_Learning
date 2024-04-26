@@ -2,3 +2,7 @@
 hacker/virtual machine iso/Windows.iso
 ReactCourseData/
 LLM/.env
+LLM_JS/.env
+/LLM_JS/node_modules
+LLM_JS/package-lock.json
+LLM_JS/package.json
