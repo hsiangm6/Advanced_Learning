@@ -71,7 +71,7 @@ async function runChat() {
 
       // 將使用者輸入和 AI 回覆加入到聊天歷史紀錄中
       chatHistory.push({ role: 'user', parts: [userInput] });
-      chatHistory.push({ role: 'AI', parts: [response] });
+      chatHistory.push({ role: 'model', parts: [response] });
     }
   } catch (error) {
     spinner.stop();
